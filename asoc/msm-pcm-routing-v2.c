@@ -24059,6 +24059,12 @@ static const struct snd_kcontrol_new hifi_filter_controls[] = {
 		msm_routing_put_hifi_filter_control),
 };
 
+#ifdef CONFIG_SND_SOC_TFA9874_FOR_DAVI
+static const char * const tert_mi2s_rx_vi_fb_tx_mux_text[] = {
+	"ZERO", "TERT_MI2S_TX"
+};
+#endif
+
 static int msm_routing_get_ffecns_freeze_event_control(
 					struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
@@ -24088,6 +24094,12 @@ static const struct snd_kcontrol_new use_ffecns_freeze_event_controls[] = {
 	1, 0, msm_routing_get_ffecns_freeze_event_control,
 	msm_routing_put_ffecns_freeze_event_control),
 };
+
+#ifdef CONFIG_SND_SOC_TFA9874_FOR_DAVI
+static const int tert_mi2s_rx_vi_fb_tx_value[] = {
+	MSM_BACKEND_DAI_MAX, MSM_BACKEND_DAI_TERTIARY_MI2S_TX
+};
+#endif
 
 int msm_routing_get_rms_value_control(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol) {
@@ -24145,6 +24157,13 @@ static int msm_voc_session_id_get(struct snd_kcontrol *kcontrol,
 
 	return 0;
 }
+
+#ifdef CONFIG_SND_SOC_TFA9874_FOR_DAVI
+static const struct soc_enum tert_mi2s_rx_vi_fb_mux_enum =
+	SOC_VALUE_ENUM_DOUBLE(0, MSM_BACKEND_DAI_TERTIARY_MI2S_RX, 0, 0,
+	ARRAY_SIZE(tert_mi2s_rx_vi_fb_tx_mux_text),
+	tert_mi2s_rx_vi_fb_tx_mux_text, tert_mi2s_rx_vi_fb_tx_value);
+#endif
 
 static struct snd_kcontrol_new msm_voc_session_controls[] = {
 	SOC_SINGLE_MULTI_EXT("Voc VSID", SND_SOC_NOPM, 0,
@@ -24945,6 +24964,13 @@ static const struct snd_kcontrol_new int4_mi2s_rx_vi_fb_mono_ch_mux =
 	SOC_DAPM_ENUM_EXT("INT4_MI2S_RX_VI_FB_MONO_CH_MUX",
 	int4_mi2s_rx_vi_fb_mono_ch_mux_enum, spkr_prot_get_vi_lch_port,
 	spkr_prot_put_vi_lch_port);
+
+#ifdef CONFIG_SND_SOC_TFA9874_FOR_DAVI
+static const struct snd_kcontrol_new tert_mi2s_rx_vi_fb_mux =
+	SOC_DAPM_ENUM_EXT("TERT_MI2S_RX_VI_FB_MUX",
+	tert_mi2s_rx_vi_fb_mux_enum, spkr_prot_get_vi_lch_port,
+	spkr_prot_put_vi_lch_port);
+#endif
 
 static const struct snd_kcontrol_new int4_mi2s_rx_vi_fb_stereo_ch_mux =
 	SOC_DAPM_ENUM_EXT("INT4_MI2S_RX_VI_FB_STEREO_CH_MUX",
@@ -25934,6 +25960,10 @@ static const struct snd_soc_dapm_widget msm_qdsp6_widgets_mi2s[] = {
 	ARRAY_SIZE(int4_mi2s_rx_port_mixer_controls)),
 	SND_SOC_DAPM_MUX("PRI_MI2S_RX_VI_FB_MUX", SND_SOC_NOPM, 0, 0,
 				&mi2s_rx_vi_fb_mux),
+#ifdef CONFIG_SND_SOC_TFA9874_FOR_DAVI
+	SND_SOC_DAPM_MUX("TERT_MI2S_RX_VI_FB_MUX", SND_SOC_NOPM, 0, 0,
+				&tert_mi2s_rx_vi_fb_mux),
+#endif
 	SND_SOC_DAPM_MUX("INT4_MI2S_RX_VI_FB_MONO_CH_MUX", SND_SOC_NOPM, 0, 0,
 				&int4_mi2s_rx_vi_fb_mono_ch_mux),
 	SND_SOC_DAPM_MUX("INT4_MI2S_RX_VI_FB_STEREO_CH_MUX", SND_SOC_NOPM, 0, 0,
@@ -31228,6 +31258,10 @@ static const struct snd_soc_dapm_route intercon_mi2s[] = {
 	{"PRI_MI2S_RX", NULL, "PRI_MI2S_RX_VI_FB_MUX"},
 	{"INT4_MI2S_RX", NULL, "INT4_MI2S_RX_VI_FB_MONO_CH_MUX"},
 	{"INT4_MI2S_RX", NULL, "INT4_MI2S_RX_VI_FB_STEREO_CH_MUX"},
+#ifdef CONFIG_SND_SOC_TFA9874_FOR_DAVI
+	{"TERT_MI2S_RX_VI_FB_MUX", "TERT_MI2S_TX", "TERT_MI2S_TX"},
+	{"TERT_MI2S_RX", NULL, "TERT_MI2S_RX_VI_FB_MUX"},
+#endif
 };
 #endif
 
